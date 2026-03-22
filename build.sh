@@ -1,24 +1,24 @@
 #!/usr/bin/env arch -x86_64 bash
 
-rm -rf ~/mesa-native
-rm -rf ~/spirv-llvm-translator-21
+# rm -rf ~/mesa-native
+# rm -rf ~/spirv-llvm-translator-21
 
 set -e
 
 export PATH="/usr/local/opt/llvm@21/bin:/usr/local/opt/bison/bin:$PATH"
 export SDKROOT=$(xcrun --show-sdk-path)
 
-cd ~/Documents/SPIRV-LLVM-Translator
-# rm -rf build
+# cd ~/Documents/SPIRV-LLVM-Translator
+# # rm -rf build
 
-cmake -S . -B build -G Ninja \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX="$HOME/spirv-llvm-translator-21" \
-  -DLLVM_DIR="$(/usr/local/bin/brew --prefix llvm@21)/lib/cmake/llvm" \
-  -DCMAKE_PREFIX_PATH="$(/usr/local/bin/brew --prefix llvm@21)"
+# cmake -S . -B build -G Ninja \
+#   -DCMAKE_BUILD_TYPE=Release \
+#   -DCMAKE_INSTALL_PREFIX="$HOME/spirv-llvm-translator-21" \
+#   -DLLVM_DIR="$(/usr/local/bin/brew --prefix llvm@21)/lib/cmake/llvm" \
+#   -DCMAKE_PREFIX_PATH="$(/usr/local/bin/brew --prefix llvm@21)"
 
-cmake --build build
-cmake --install build
+# cmake --build build
+# cmake --install build
 
 cd ~/Documents/mesa
 rm -rf build
@@ -35,8 +35,9 @@ export CMAKE_PREFIX_PATH="$HOME/spirv-llvm-translator-21:$CMAKE_PREFIX_PATH"
 
 source .venv/bin/activate
 
+PREFIX=/opt/wine-gl46
 meson setup build --native-file native.ini \
-  -Dprefix=$HOME/mesa-native \
+  -Dprefix=$PREFIX \
   -Dbuildtype=release \
   -Dplatforms=macos \
   -Degl-native-platform=surfaceless \
@@ -52,9 +53,9 @@ meson setup build --native-file native.ini \
 ninja -C build
 ninja -C build install
 
-mkdir -p $HOME/mesa-native/lib/dri
-cd $HOME/mesa-native/lib/dri  
+mkdir -p $PREFIX/lib/dri
+cd $PREFIX/lib/dri  
 ln -sf ../libgallium-26.0.0-devel.dylib zink_dri.so
 ln -sf ../libgallium-26.0.0-devel.dylib swrast_dri.so
 
-cp /usr/local/lib/libvulkan.1.dylib $HOME/mesa-native/lib/
+cp /usr/local/lib/libvulkan.1.dylib $PREFIX/lib/
