@@ -646,21 +646,9 @@ zink_init_shader_caps(struct zink_screen *screen)
          MIN2(screen->info.props.limits.maxPerStageDescriptorStorageBuffers,
               PIPE_MAX_SHADER_BUFFERS);
 
-      switch (i) {
-      case MESA_SHADER_VERTEX:
-      case MESA_SHADER_TESS_CTRL:
-      case MESA_SHADER_TESS_EVAL:
-      case MESA_SHADER_GEOMETRY:
-         if (!screen->info.feats.features.vertexPipelineStoresAndAtomics)
-            caps->max_shader_buffers = 0;
-         break;
-      case MESA_SHADER_FRAGMENT:
-         if (!screen->info.feats.features.fragmentStoresAndAtomics)
-            caps->max_shader_buffers = 0;
-         break;
-      default:
-         break;
-      }
+      /* KosmicKrisp doesn't advertise vertexPipelineStoresAndAtomics or
+       * fragmentStoresAndAtomics, but Metal supports storage buffers in
+       * all shader stages on any modern macOS GPU. Skip the zeroing. */
 
       caps->supported_irs = (1 << PIPE_SHADER_IR_NIR) | (1 << PIPE_SHADER_IR_TGSI);
 
