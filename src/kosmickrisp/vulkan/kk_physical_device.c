@@ -158,6 +158,7 @@ kk_get_device_features(
       .dualSrcBlend = true,
       .fragmentStoresAndAtomics = true,
       .fullDrawIndexUint32 = true,
+      .vertexPipelineStoresAndAtomics = true,
       .imageCubeArray = true,
       .independentBlend = true,
       .inheritedQueries = true,

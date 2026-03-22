@@ -21,7 +21,7 @@ export SDKROOT=$(xcrun --show-sdk-path)
 # cmake --install build
 
 cd ~/Documents/mesa
-rm -rf build
+# rm -rf build
 export LLVM_CONFIG=/usr/local/opt/llvm@21/bin/llvm-config
 
 export PATH="/usr/local/opt/llvm@21/bin:/usr/local/opt/bison/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
