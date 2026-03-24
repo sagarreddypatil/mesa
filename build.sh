@@ -1,27 +1,16 @@
 #!/usr/bin/env arch -x86_64 bash
 
-# rm -rf ~/mesa-native
-# rm -rf ~/spirv-llvm-translator-21
-
 set -e
 
-export PATH="/usr/local/opt/llvm@21/bin:/usr/local/opt/bison/bin:$PATH"
+is_rosetta=$(sysctl -n sysctl.proc_translated)
+if [ "$is_rosetta" -eq 1 ]; then
+  echo "Running under Rosetta"
+else
+  echo "Error: running natively on Apple silicon"
+  exit -1
+fi
+
 export SDKROOT=$(xcrun --show-sdk-path)
-
-# cd ~/Documents/SPIRV-LLVM-Translator
-# # rm -rf build
-
-# cmake -S . -B build -G Ninja \
-#   -DCMAKE_BUILD_TYPE=Release \
-#   -DCMAKE_INSTALL_PREFIX="$HOME/spirv-llvm-translator-21" \
-#   -DLLVM_DIR="$(/usr/local/bin/brew --prefix llvm@21)/lib/cmake/llvm" \
-#   -DCMAKE_PREFIX_PATH="$(/usr/local/bin/brew --prefix llvm@21)"
-
-# cmake --build build
-# cmake --install build
-
-cd ~/Documents/mesa
-# rm -rf build
 export LLVM_CONFIG=/usr/local/opt/llvm@21/bin/llvm-config
 
 export PATH="/usr/local/opt/llvm@21/bin:/usr/local/opt/bison/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
@@ -38,6 +27,9 @@ source .venv/bin/activate
 PREFIX=/opt/wine-gl46
 meson setup build --native-file native.ini \
   -Dprefix=$PREFIX \
+  -Ddefault_library=static \
+  -Dprefer_static=true \
+  -Dshared-llvm=disabled \
   -Dbuildtype=release \
   -Dplatforms=macos \
   -Degl-native-platform=surfaceless \
@@ -58,4 +50,8 @@ cd $PREFIX/lib/dri
 ln -sf ../libgallium-26.0.0-devel.dylib zink_dri.so
 ln -sf ../libgallium-26.0.0-devel.dylib swrast_dri.so
 
+sudo rm -f $PREFIX/lib/libvulkan.1.dylib
+sudo rm -f $PREFIX/lib/libzstd.1.dylib
+
 cp /usr/local/lib/libvulkan.1.dylib $PREFIX/lib/
+cp /usr/local/lib/libzstd.1.dylib $PREFIX/lib/
